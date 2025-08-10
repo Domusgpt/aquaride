@@ -1,18 +1,22 @@
 import { initializeApp } from "firebase/app";
 import { getAuth } from "firebase/auth";
-import { getFirestore } from "firebase/firestore";
+import { getFirestore, disableNetwork, enableNetwork } from "firebase/firestore";
 
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
+  apiKey: "AIzaSyCHrL2iDhySpBRfId145kIUPkQrGznHyRk",
   authDomain: "aquaride-daa69.firebaseapp.com",
   projectId: "aquaride-daa69",
-  storageBucket: "aquaride-daa69.appspot.com",
+  storageBucket: "aquaride-daa69.firebasestorage.app",
   messagingSenderId: "196750425234",
-  appId: "YOUR_APP_ID"
+  appId: "1:196750425234:web:c7cb78542498050513fa4b",
+  measurementId: "G-TFWD5FS964"
 };
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
 const db = getFirestore(app);
+
+// Force enable network to avoid Write channel issues
+enableNetwork(db).catch(console.error);
 
 export { auth, db };

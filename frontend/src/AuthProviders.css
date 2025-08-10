@@ -1,0 +1,292 @@
+/* AquaRide Authentication Providers - Uber/Lyft Style */
+
+.auth-providers {
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 40px 20px;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+}
+
+.auth-header {
+    text-align: center;
+    margin-bottom: 32px;
+}
+
+.auth-header h2 {
+    font-size: 28px;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin-bottom: 8px;
+}
+
+.auth-header p {
+    color: #666;
+    font-size: 16px;
+}
+
+.error-message {
+    background-color: #fee;
+    color: #c33;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid #fcc;
+}
+
+.social-auth-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.auth-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    background: white;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    text-decoration: none;
+    color: #1a1a1a;
+}
+
+.auth-button:hover:not(:disabled) {
+    background-color: #f8f8f8;
+    border-color: #bbb;
+}
+
+.auth-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.auth-icon {
+    margin-right: 12px;
+    font-size: 18px;
+}
+
+.google-auth {
+    border-color: #4285f4;
+}
+
+.google-auth:hover:not(:disabled) {
+    background-color: #f4f8ff;
+    border-color: #4285f4;
+}
+
+.facebook-auth {
+    border-color: #1877f2;
+}
+
+.facebook-auth:hover:not(:disabled) {
+    background-color: #f4f8ff;
+    border-color: #1877f2;
+}
+
+.apple-auth {
+    border-color: #000;
+}
+
+.apple-auth:hover:not(:disabled) {
+    background-color: #f8f8f8;
+    border-color: #000;
+}
+
+.phone-auth {
+    border-color: #00c851;
+}
+
+.phone-auth:hover:not(:disabled) {
+    background-color: #f4fff4;
+    border-color: #00c851;
+}
+
+.auth-divider {
+    text-align: center;
+    margin: 24px 0;
+    position: relative;
+}
+
+.auth-divider::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: #ddd;
+}
+
+.auth-divider span {
+    background: white;
+    color: #666;
+    padding: 0 16px;
+    font-size: 14px;
+    position: relative;
+}
+
+.phone-auth-section,
+.email-auth-section {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.auth-input {
+    padding: 16px;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: border-color 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.auth-input:focus {
+    outline: none;
+    border-color: #007aff;
+    box-shadow: 0 0 0 3px rgba(0, 122, 255, 0.1);
+}
+
+.captain-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    color: #666;
+    cursor: pointer;
+}
+
+.captain-checkbox input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.auth-button.primary {
+    background-color: #007aff;
+    color: white;
+    border-color: #007aff;
+    font-weight: 600;
+}
+
+.auth-button.primary:hover:not(:disabled) {
+    background-color: #0056cc;
+    border-color: #0056cc;
+}
+
+.auth-footer {
+    text-align: center;
+    margin-top: 32px;
+}
+
+.auth-footer p {
+    font-size: 12px;
+    color: #999;
+    line-height: 1.4;
+}
+
+/* reCAPTCHA container */
+#recaptcha-container {
+    margin: 16px 0;
+    display: flex;
+    justify-content: center;
+}
+
+/* Mobile responsive */
+@media (max-width: 480px) {
+    .auth-providers {
+        padding: 20px 16px;
+    }
+    
+    .auth-header h2 {
+        font-size: 24px;
+    }
+    
+    .auth-button {
+        padding: 14px;
+        font-size: 15px;
+    }
+    
+    .auth-input {
+        padding: 14px;
+        font-size: 15px;
+    }
+}
+
+/* Loading state */
+.auth-button:disabled {
+    background-color: #f5f5f5;
+    color: #999;
+}
+
+/* Success states */
+.auth-success {
+    background-color: #e8f5e8;
+    color: #2e7d32;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    font-size: 14px;
+    text-align: center;
+    border: 1px solid #c8e6c9;
+}
+
+/* Accessibility improvements */
+.auth-button:focus {
+    outline: 2px solid #007aff;
+    outline-offset: 2px;
+}
+
+.auth-input:invalid {
+    border-color: #ff3b30;
+}
+
+/* Brand colors matching Uber/Lyft style */
+.uber-style {
+    --primary-color: #000;
+    --secondary-color: #1a1a1a;
+}
+
+.lyft-style {
+    --primary-color: #ff00bf;
+    --secondary-color: #352384;
+}
+
+/* Auth switch section */
+.auth-switch {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid #eee;
+}
+
+.auth-switch p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+.link-button {
+    background: none;
+    border: none;
+    color: #007aff;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 500;
+    text-decoration: underline;
+    margin-left: 4px;
+}
+
+.link-button:hover {
+    color: #0056cc;
+}

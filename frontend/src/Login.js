@@ -1,51 +1,57 @@
-import React, { useState } from 'react';
-import { signInWithEmailAndPassword } from "firebase/auth";
-import { doc, getDoc } from "firebase/firestore";
-import { auth, db } from './firebase';
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { doc, getDoc, setDoc } from "firebase/firestore";
+import { db } from './firebase';
+import AuthProviders from './AuthProviders';
+import './AuthProviders.css';
 
 const Login = () => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState('');
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const handleAuthSuccess = async (user) => {
     try {
-      const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      const user = userCredential.user;
-
-      // Fetch additional user data from Firestore
+      // Fetch user data to check account type and preferences
       const userDoc = await getDoc(doc(db, "users", user.uid));
       if (userDoc.exists()) {
-        console.log("User data:", userDoc.data());
-        // You can store this data in your app's state or context
+        const userData = userDoc.data();
+        console.log("User logged in:", userData);
+        
+        // Update last login
+        await setDoc(doc(db, "users", user.uid), {
+          ...userData,
+          lastLogin: new Date()
+        }, { merge: true });
+        
+        // Redirect based on user type or to map
+        navigate(userData.isCaptain ? '/captain-dashboard' : '/map');
       } else {
-        console.log("No user data found in Firestore!");
+        // First time login with social auth - go to map
+        navigate('/map');
       }
-
-      console.log('User logged in:', user);
-      setError('');
     } catch (error) {
-      setError(error.message);
+      console.error('Error fetching user data:', error);
+      navigate('/map'); // Fallback redirect
     }
   };
 
   return (
     <div className="form-container">
       <div className="form-card">
-        <h2 className="form-title">Login</h2>
-        {error && <p style={{ color: 'red' }}>{error}</p>}
-        <form onSubmit={handleSubmit}>
-          <div className="form-group">
-            <label>Email:</label>
-            <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-          </div>
-          <div className="form-group">
-            <label>Password:</label>
-            <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} />
-          </div>
-          <button type="submit" className="cyber-button">Login</button>
-        </form>
+        <AuthProviders 
+          isRegistering={false} 
+          onSuccess={handleAuthSuccess}
+        />
+        <div className="auth-switch">
+          <p>
+            Don't have an account? 
+            <button 
+              onClick={() => navigate('/register')} 
+              className="link-button"
+            >
+              Sign Up
+            </button>
+          </p>
+        </div>
       </div>
     </div>
   );
