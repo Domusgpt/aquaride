@@ -1,4 +1,6 @@
 import React, { useState } from 'react';
+import { createUserWithEmailAndPassword } from "firebase/auth";
+import { auth } from './firebase';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -8,8 +10,14 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    // Handle registration logic here
-    console.log('Email:', email, 'Password:', password, 'Is Captain:', isCaptain);
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      // You can now store additional user data (like isCaptain) in Firestore
+      console.log(userCredential.user);
+      setError('');
+    } catch (error) {
+      setError(error.message);
+    }
   };
 
   return (
