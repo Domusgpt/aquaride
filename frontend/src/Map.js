@@ -1,5 +1,7 @@
 import React, { useState } from 'react';
 import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { getFunctions, httpsCallable } from 'firebase/functions';
+import { auth } from './firebase'; // Assuming auth is exported from firebase.js
 
 const Map = () => {
   const position = [51.505, -0.09]; // Default position
@@ -8,14 +10,25 @@ const Map = () => {
   const [boatType, setBoatType] = useState('Any');
   const [requestStatus, setRequestStatus] = useState('');
 
-  const handleRequestRide = (e) => {
+  const handleRequestRide = async (e) => {
     e.preventDefault();
     setRequestStatus('Requesting ride...');
-    // Here you would typically send this data to a Firebase Cloud Function
-    console.log('Ride Request:', { pickup, dropoff, boatType });
-    setTimeout(() => {
-      setRequestStatus('Ride requested! Waiting for captain...');
-    }, 2000);
+
+    if (!auth.currentUser) {
+      setRequestStatus('Please log in to request a ride.');
+      return;
+    }
+
+    try {
+      const functions = getFunctions();
+      const requestRideCallable = httpsCallable(functions, 'requestRide');
+      const result = await requestRideCallable({ pickup, dropoff, boatType });
+      console.log('Cloud Function response:', result.data);
+      setRequestStatus(`Ride requested! ID: ${result.data.rideId}. ${result.data.message}`);
+    } catch (error) {
+      console.error('Error requesting ride:', error);
+      setRequestStatus(`Error: ${error.message}`);
+    }
   };
 
   return (
