@@ -1,0 +1,50 @@
+[debug] [2025-08-10T01:30:07.738Z] ----------------------------------------------------------------------
+[debug] [2025-08-10T01:30:07.740Z] Command:       /home/millz/.nvm/versions/node/v22.17.0/bin/node /home/millz/.nvm/versions/node/v22.17.0/bin/firebase init firestore --project your-firebase-project-id --non-interactive
+[debug] [2025-08-10T01:30:07.741Z] CLI Version:   14.10.1
+[debug] [2025-08-10T01:30:07.741Z] Platform:      linux
+[debug] [2025-08-10T01:30:07.741Z] Node Version:  v22.17.0
+[debug] [2025-08-10T01:30:07.741Z] Time:          Sat Aug 09 2025 21:30:07 GMT-0400 (Eastern Daylight Time)
+[debug] [2025-08-10T01:30:07.741Z] ----------------------------------------------------------------------
+[debug] 
+[debug] [2025-08-10T01:30:07.748Z] > command requires scopes: ["email","openid","https://www.googleapis.com/auth/cloudplatformprojects.readonly","https://www.googleapis.com/auth/firebase","https://www.googleapis.com/auth/cloud-platform"]
+[debug] [2025-08-10T01:30:07.749Z] > authorizing via signed-in user (phillips.paul.email@gmail.com)
+[info] 
+     ######## #### ########  ######## ########     ###     ######  ########
+     ##        ##  ##     ## ##       ##     ##  ##   ##  ##       ##
+     ######    ##  ########  ######   ########  #########  ######  ######
+     ##        ##  ##    ##  ##       ##     ## ##     ##       ## ##
+     ##       #### ##     ## ######## ########  ##     ##  ######  ########
+
+You're about to initialize a Firebase project in this directory:
+
+  /mnt/c/Users/millz/aquaride-firebase
+
+Before we get started, keep in mind:
+
+  * You are currently outside your home directory
+
+[info] 
+=== Project Setup
+[info] 
+[info] First, let's associate this project directory with a Firebase project.
+[info] You can create multiple project aliases by running firebase use --add, 
+[info] but for now we'll just set up a default project.
+[info] 
+[debug] [2025-08-10T01:30:07.752Z] Using project from CLI flag: your-firebase-project-id
+[debug] [2025-08-10T01:30:07.752Z] Checked if tokens are valid: false, expires at: 1754532935551
+[debug] [2025-08-10T01:30:07.753Z] Checked if tokens are valid: false, expires at: 1754532935551
+[debug] [2025-08-10T01:30:07.753Z] > refreshing access token with scopes: []
+[debug] [2025-08-10T01:30:07.759Z] >>> [apiv2][query] POST https://www.googleapis.com/oauth2/v3/token [none]
+[debug] [2025-08-10T01:30:07.759Z] >>> [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-08-10T01:30:07.995Z] <<< [apiv2][status] POST https://www.googleapis.com/oauth2/v3/token 200
+[debug] [2025-08-10T01:30:07.996Z] <<< [apiv2][body] POST https://www.googleapis.com/oauth2/v3/token [omitted]
+[debug] [2025-08-10T01:30:08.010Z] >>> [apiv2][query] GET https://firebase.googleapis.com/v1beta1/projects/your-firebase-project-id [none]
+[debug] [2025-08-10T01:30:08.427Z] <<< [apiv2][status] GET https://firebase.googleapis.com/v1beta1/projects/your-firebase-project-id 403
+[debug] [2025-08-10T01:30:08.427Z] <<< [apiv2][body] GET https://firebase.googleapis.com/v1beta1/projects/your-firebase-project-id {"error":{"code":403,"message":"The caller does not have permission","status":"PERMISSION_DENIED"}}
+[debug] [2025-08-10T01:30:08.428Z] Request to https://firebase.googleapis.com/v1beta1/projects/your-firebase-project-id had HTTP Error: 403, The caller does not have permission
+[debug] [2025-08-10T01:30:08.572Z] FirebaseError: Request to https://firebase.googleapis.com/v1beta1/projects/your-firebase-project-id had HTTP Error: 403, The caller does not have permission
+    at responseToError (/home/millz/.nvm/versions/node/v22.17.0/lib/node_modules/firebase-tools/lib/responseToError.js:52:12)
+    at RetryOperation._fn (/home/millz/.nvm/versions/node/v22.17.0/lib/node_modules/firebase-tools/lib/apiv2.js:312:77)
+    at process.processTicksAndRejections (node:internal/process/task_queues:105:5)
+[error] 
+[error] Error: Failed to get Firebase project your-firebase-project-id. Please make sure the project exists and your account has permission to access it.
