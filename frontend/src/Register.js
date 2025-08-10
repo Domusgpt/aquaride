@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { createUserWithEmailAndPassword } from "firebase/auth";
-import { auth } from './firebase';
+import { doc, setDoc } from "firebase/firestore";
+import { auth, db } from './firebase';
 
 const Register = () => {
   const [email, setEmail] = useState('');
@@ -12,8 +13,15 @@ const Register = () => {
     e.preventDefault();
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-      // You can now store additional user data (like isCaptain) in Firestore
-      console.log(userCredential.user);
+      const user = userCredential.user;
+
+      // Store additional user data in Firestore
+      await setDoc(doc(db, "users", user.uid), {
+        email: user.email,
+        isCaptain: isCaptain,
+      });
+
+      console.log('User registered and data stored:', user);
       setError('');
     } catch (error) {
       setError(error.message);

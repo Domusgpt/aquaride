@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { signInWithEmailAndPassword } from "firebase/auth";
-import { auth } from './firebase';
+import { doc, getDoc } from "firebase/firestore";
+import { auth, db } from './firebase';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -11,7 +12,18 @@ const Login = () => {
     e.preventDefault();
     try {
       const userCredential = await signInWithEmailAndPassword(auth, email, password);
-      console.log(userCredential.user);
+      const user = userCredential.user;
+
+      // Fetch additional user data from Firestore
+      const userDoc = await getDoc(doc(db, "users", user.uid));
+      if (userDoc.exists()) {
+        console.log("User data:", userDoc.data());
+        // You can store this data in your app's state or context
+      } else {
+        console.log("No user data found in Firestore!");
+      }
+
+      console.log('User logged in:', user);
       setError('');
     } catch (error) {
       setError(error.message);
