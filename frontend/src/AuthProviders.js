@@ -300,6 +300,7 @@ const AuthProviders = ({ isRegistering = true, onSuccess }) => {
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
                     className="auth-input"
+                    autoComplete={isRegistering ? "new-password" : "current-password"}
                     required
                 />
                 

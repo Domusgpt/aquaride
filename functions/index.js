@@ -11,8 +11,8 @@ exports.requestRide = onCall(async (request) => {
     }
     const passengerId = request.auth.uid;
     const { pickup, dropoff, boatType } = request.data;
-    if (!pickup || !dropoff || !boatType) {
-        throw new HttpsError('invalid-argument', 'Missing ride details.');
+    if (!pickup || !dropoff || !boatType || pickup.trim() === '' || dropoff.trim() === '') {
+        throw new HttpsError('invalid-argument', 'Missing ride details. Please provide pickup location, dropoff location, and boat type.');
     }
     const rideRef = db.collection('rides').doc();
     await rideRef.set({

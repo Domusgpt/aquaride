@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>AquaRide - Google Maps Test</title>
+    <style>
+        #map {
+            height: 100vh;
+            width: 100%;
+        }
+        body, html {
+            height: 100%;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        .header {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        .form-controls {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            max-width: 300px;
+        }
+        .form-controls input, .form-controls select, .form-controls button {
+            width: 100%;
+            margin: 5px 0;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+        .form-controls button {
+            background: #007bff;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .form-controls button:hover {
+            background: #0056b3;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h2>🚢 AquaRide - Google Maps Integration Test</h2>
+        <p>✅ If you see this map working, Google Maps API is functional!</p>
+    </div>
+    
+    <div class="form-controls">
+        <h4>🗺️ Test Ride Request</h4>
+        <input type="text" id="pickup" placeholder="📍 Pickup location..." />
+        <input type="text" id="dropoff" placeholder="🎯 Dropoff location..." />
+        <select id="boatType">
+            <option value="Speedboat">🏎️ Speedboat</option>
+            <option value="Yacht">🛥️ Yacht</option>
+            <option value="Sailboat">⛵ Sailboat</option>
+            <option value="Any">🚢 Any Available</option>
+        </select>
+        <button onclick="requestRide()">🚢 Test Ride Request</button>
+        <button onclick="getCurrentLocation()">📍 My Location</button>
+        <div id="status" style="margin-top: 10px; font-size: 12px;"></div>
+    </div>
+
+    <div id="map"></div>
+
+    <script>
+        let map;
+        let pickupAutocomplete;
+        let dropoffAutocomplete;
+        let markers = [];
+
+        function initMap() {
+            console.log('✅ Google Maps API loaded successfully');
+            
+            // Get user location or default to San Francisco Bay
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const userPos = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        createMap(userPos);
+                    },
+                    () => {
+                        const defaultPos = { lat: 37.7749, lng: -122.4194 };
+                        createMap(defaultPos);
+                    }
+                );
+            } else {
+                const defaultPos = { lat: 37.7749, lng: -122.4194 };
+                createMap(defaultPos);
+            }
+        }
+
+        function createMap(center) {
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: center,
+                zoom: 13,
+                styles: [
+                    {
+                        featureType: 'water',
+                        elementType: 'geometry',
+                        stylers: [{ color: '#0099ff' }]
+                    },
+                    {
+                        featureType: 'landscape',
+                        elementType: 'geometry.fill',
+                        stylers: [{ color: '#f0f8ff' }]
+                    }
+                ]
+            });
+
+            // Add user location marker
+            new google.maps.Marker({
+                position: center,
+                map: map,
+                title: 'Your Location',
+                icon: {
+                    url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+                }
+            });
+
+            // Setup autocomplete
+            setupAutocomplete();
+            
+            document.getElementById('status').innerHTML = '✅ Map loaded! Try entering locations.';
+        }
+
+        function setupAutocomplete() {
+            const pickupInput = document.getElementById('pickup');
+            const dropoffInput = document.getElementById('dropoff');
+
+            pickupAutocomplete = new google.maps.places.Autocomplete(pickupInput);
+            dropoffAutocomplete = new google.maps.places.Autocomplete(dropoffInput);
+
+            pickupAutocomplete.addListener('place_changed', () => {
+                const place = pickupAutocomplete.getPlace();
+                if (place.geometry) {
+                    addMarker(place.geometry.location, 'Pickup', 'green');
+                    map.panTo(place.geometry.location);
+                }
+            });
+
+            dropoffAutocomplete.addListener('place_changed', () => {
+                const place = dropoffAutocomplete.getPlace();
+                if (place.geometry) {
+                    addMarker(place.geometry.location, 'Dropoff', 'red');
+                }
+            });
+        }
+
+        function addMarker(position, title, color) {
+            const marker = new google.maps.Marker({
+                position: position,
+                map: map,
+                title: title,
+                icon: {
+                    url: `https://maps.google.com/mapfiles/ms/icons/${color}-dot.png`
+                }
+            });
+            markers.push(marker);
+        }
+
+        function getCurrentLocation() {
+            if (navigator.geolocation && map) {
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const pos = {
+                            lat: position.coords.latitude,
+                            lng: position.coords.longitude
+                        };
+                        map.panTo(pos);
+                        map.setZoom(15);
+                        addMarker(pos, 'Current Location', 'blue');
+                        document.getElementById('status').innerHTML = '📍 Location updated!';
+                    },
+                    () => {
+                        document.getElementById('status').innerHTML = '❌ Unable to get location.';
+                    }
+                );
+            }
+        }
+
+        function requestRide() {
+            const pickup = document.getElementById('pickup').value;
+            const dropoff = document.getElementById('dropoff').value;
+            const boatType = document.getElementById('boatType').value;
+            
+            if (!pickup || !dropoff) {
+                document.getElementById('status').innerHTML = '❌ Please enter both pickup and dropoff locations.';
+                return;
+            }
+            
+            document.getElementById('status').innerHTML = `🚢 Ride requested: ${pickup} → ${dropoff} (${boatType})`;
+        }
+    </script>
+
+    <!-- Google Maps API key should be added via environment variable or server-side configuration -->
+    <script async defer 
+        src="https://maps.googleapis.com/maps/api/js?key=YOUR_API_KEY_HERE&libraries=places&callback=initMap">
+    </script>
+</body>
+</html>
