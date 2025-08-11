@@ -1,6 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import ModernGoogleMap from './ModernGoogleMap';
+import UltraModernGoogleMap from './UltraModernGoogleMap';
 import Map from './Map';
 import Login from './Login';
 import Register from './Register';
@@ -29,8 +29,8 @@ function App() {
         </nav>
 
         <Routes>
-          <Route path="/" element={<ModernGoogleMap />} />
-          <Route path="/map" element={<ModernGoogleMap />} />
+          <Route path="/" element={<UltraModernGoogleMap />} />
+          <Route path="/map" element={<UltraModernGoogleMap />} />
           <Route path="/leaflet" element={<Map />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />

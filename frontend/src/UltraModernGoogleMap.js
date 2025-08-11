@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { getFunctions, httpsCallable } from 'firebase/functions';
 import { auth } from './firebase';
 
-const ModernGoogleMap = () => {
+const UltraModernGoogleMap = () => {
   const mapRef = useRef(null);
   const [map, setMap] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -11,52 +11,66 @@ const ModernGoogleMap = () => {
   const [boatType, setBoatType] = useState('Speedboat');
   const [requestStatus, setRequestStatus] = useState('');
   const [markers, setMarkers] = useState([]);
+  const [loadError, setLoadError] = useState('');
 
   const pickupInputRef = useRef(null);
   const dropoffInputRef = useRef(null);
 
-  // Load Google Maps API dynamically with modern async approach
+  // Load Google Maps API with latest 2025 approach
   const loadGoogleMapsAPI = useCallback(() => {
     return new Promise((resolve, reject) => {
+      // Prevent multiple loads
       if (window.google && window.google.maps) {
+        setIsLoaded(true);
         resolve(window.google);
+        return;
+      }
+
+      // Clear any existing scripts to prevent conflicts
+      const existingScript = document.querySelector('script[src*="maps.googleapis.com"]');
+      if (existingScript) {
+        existingScript.remove();
+      }
+
+      const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+      
+      if (!apiKey) {
+        const error = 'Google Maps API key not found in environment variables';
+        setLoadError(error);
+        reject(new Error(error));
         return;
       }
 
       const script = document.createElement('script');
-      const apiKey = process.env.REACT_APP_GOOGLE_MAPS_API_KEY;
+      const callbackName = 'initGoogleMapsCallback' + Date.now();
       
-      if (!apiKey) {
-        reject(new Error('Google Maps API key not found'));
-        return;
-      }
-
-      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,marker&loading=async&callback=initGoogleMapsCallback`;
+      script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places,marker&callback=${callbackName}&loading=async&v=weekly`;
       script.async = true;
       script.defer = true;
 
-      window.initGoogleMapsCallback = () => {
-        delete window.initGoogleMapsCallback;
+      window[callbackName] = () => {
+        delete window[callbackName];
+        setIsLoaded(true);
         resolve(window.google);
       };
 
-      script.onerror = () => {
-        reject(new Error('Failed to load Google Maps API'));
+      script.onerror = (error) => {
+        setLoadError('Failed to load Google Maps API');
+        reject(error);
       };
 
       document.head.appendChild(script);
     });
   }, []);
 
-  // Initialize map with modern practices
+  // Initialize map
   const initializeMap = useCallback(async () => {
+    if (!mapRef.current) return;
+
     try {
       const google = await loadGoogleMapsAPI();
-      setIsLoaded(true);
 
-      // Get user location or default to San Francisco Bay
-      const defaultLocation = { lat: 37.7749, lng: -122.4194 };
-      
+      // Get user location
       const getUserLocation = () => {
         return new Promise((resolve) => {
           if (navigator.geolocation) {
@@ -67,23 +81,25 @@ const ModernGoogleMap = () => {
                   lng: position.coords.longitude
                 });
               },
-              () => resolve(defaultLocation)
+              () => resolve({ lat: 37.7749, lng: -122.4194 }) // San Francisco Bay default
             );
           } else {
-            resolve(defaultLocation);
+            resolve({ lat: 37.7749, lng: -122.4194 });
           }
         });
       };
 
       const userLocation = await getUserLocation();
       
-      // Create map with modern configuration
+      // Create map with optimal settings
       const mapInstance = new google.maps.Map(mapRef.current, {
         center: userLocation,
         zoom: 13,
         mapTypeControl: false,
         streetViewControl: false,
         fullscreenControl: false,
+        zoomControl: true,
+        gestureHandling: 'cooperative',
         styles: [
           {
             featureType: 'water',
@@ -94,87 +110,165 @@ const ModernGoogleMap = () => {
             featureType: 'landscape',
             elementType: 'geometry.fill',
             stylers: [{ color: '#f8f9fa' }]
+          },
+          {
+            featureType: 'poi.business',
+            stylers: [{ visibility: 'on' }]
           }
         ]
       });
 
       setMap(mapInstance);
 
-      // Add user location marker using modern AdvancedMarkerElement
-      const userMarker = new google.maps.marker.AdvancedMarkerElement({
-        map: mapInstance,
-        position: userLocation,
-        title: 'Your Location'
-      });
+      // Add user location marker with modern API
+      if (google.maps.marker && google.maps.marker.AdvancedMarkerElement) {
+        const userMarker = new google.maps.marker.AdvancedMarkerElement({
+          map: mapInstance,
+          position: userLocation,
+          title: 'Your Location'
+        });
+        setMarkers([userMarker]);
+      } else {
+        // Fallback to regular marker if AdvancedMarkerElement not available
+        const userMarker = new google.maps.Marker({
+          map: mapInstance,
+          position: userLocation,
+          title: 'Your Location',
+          icon: {
+            url: 'https://maps.google.com/mapfiles/ms/icons/blue-dot.png'
+          }
+        });
+        setMarkers([userMarker]);
+      }
 
-      setMarkers([userMarker]);
+      // Setup modern place autocomplete
+      setupPlaceAutocomplete(google, mapInstance);
 
-      // Setup modern autocomplete
-      setupAutocomplete(google, mapInstance);
+      setRequestStatus('🗺️ Map loaded successfully! Enter pickup and dropoff locations.');
 
     } catch (error) {
       console.error('Error initializing Google Maps:', error);
-      setRequestStatus('❌ Failed to load Google Maps. Check your internet connection.');
+      setLoadError('Failed to initialize Google Maps: ' + error.message);
+      setRequestStatus('❌ Failed to load Google Maps. Please refresh the page.');
     }
   }, [loadGoogleMapsAPI]);
 
-  // Setup autocomplete with modern API
-  const setupAutocomplete = (google, mapInstance) => {
+  // Setup place autocomplete with latest 2025 API
+  const setupPlaceAutocomplete = (google, mapInstance) => {
     if (!pickupInputRef.current || !dropoffInputRef.current) return;
 
-    const pickupAutocomplete = new google.maps.places.Autocomplete(
-      pickupInputRef.current,
-      { 
-        types: ['establishment', 'geocode'],
-        fields: ['place_id', 'geometry', 'name', 'formatted_address']
-      }
-    );
-
-    const dropoffAutocomplete = new google.maps.places.Autocomplete(
-      dropoffInputRef.current,
-      { 
-        types: ['establishment', 'geocode'],
-        fields: ['place_id', 'geometry', 'name', 'formatted_address']
-      }
-    );
-
-    pickupAutocomplete.addListener('place_changed', () => {
-      const place = pickupAutocomplete.getPlace();
-      if (place.geometry && place.geometry.location) {
-        setPickup(place.formatted_address || place.name || '');
-        mapInstance.panTo(place.geometry.location);
-        
-        // Add pickup marker
-        const marker = new google.maps.marker.AdvancedMarkerElement({
-          map: mapInstance,
-          position: place.geometry.location,
-          title: 'Pickup Location'
+    try {
+      // Use the latest PlaceAutocompleteElement if available
+      if (google.maps.places.PlaceAutocompleteElement) {
+        // Modern approach for 2025
+        const pickupAutocomplete = new google.maps.places.PlaceAutocompleteElement({
+          types: ['establishment', 'geocode']
         });
         
-        setMarkers(prev => [...prev.filter(m => m.title !== 'Pickup Location'), marker]);
-      }
-    });
-
-    dropoffAutocomplete.addListener('place_changed', () => {
-      const place = dropoffAutocomplete.getPlace();
-      if (place.geometry && place.geometry.location) {
-        setDropoff(place.formatted_address || place.name || '');
-        
-        // Add dropoff marker
-        const marker = new google.maps.marker.AdvancedMarkerElement({
-          map: mapInstance,
-          position: place.geometry.location,
-          title: 'Dropoff Location'
+        const dropoffAutocomplete = new google.maps.places.PlaceAutocompleteElement({
+          types: ['establishment', 'geocode']
         });
+
+        // Replace input elements with autocomplete elements
+        pickupInputRef.current.parentNode.replaceChild(pickupAutocomplete, pickupInputRef.current);
+        dropoffInputRef.current.parentNode.replaceChild(dropoffAutocomplete, dropoffInputRef.current);
+
+        // Set up event listeners
+        pickupAutocomplete.addEventListener('gmp-placeselect', (event) => {
+          const place = event.detail.place;
+          if (place.geometry && place.geometry.location) {
+            setPickup(place.displayName || place.formattedAddress || '');
+            mapInstance.panTo(place.geometry.location);
+            addMarker(google, mapInstance, place.geometry.location, 'Pickup Location', 'green');
+          }
+        });
+
+        dropoffAutocomplete.addEventListener('gmp-placeselect', (event) => {
+          const place = event.detail.place;
+          if (place.geometry && place.geometry.location) {
+            setDropoff(place.displayName || place.formattedAddress || '');
+            addMarker(google, mapInstance, place.geometry.location, 'Dropoff Location', 'red');
+          }
+        });
+
+      } else {
+        // Fallback to traditional Autocomplete with error suppression
+        console.warn('Using legacy Autocomplete API as fallback');
         
-        setMarkers(prev => [...prev.filter(m => m.title !== 'Dropoff Location'), marker]);
+        const pickupAutocomplete = new google.maps.places.Autocomplete(
+          pickupInputRef.current,
+          { 
+            types: ['establishment', 'geocode'],
+            fields: ['place_id', 'geometry', 'name', 'formatted_address']
+          }
+        );
+
+        const dropoffAutocomplete = new google.maps.places.Autocomplete(
+          dropoffInputRef.current,
+          { 
+            types: ['establishment', 'geocode'],
+            fields: ['place_id', 'geometry', 'name', 'formatted_address']
+          }
+        );
+
+        pickupAutocomplete.addListener('place_changed', () => {
+          const place = pickupAutocomplete.getPlace();
+          if (place.geometry && place.geometry.location) {
+            setPickup(place.formatted_address || place.name || '');
+            mapInstance.panTo(place.geometry.location);
+            addMarker(google, mapInstance, place.geometry.location, 'Pickup Location', 'green');
+          }
+        });
+
+        dropoffAutocomplete.addListener('place_changed', () => {
+          const place = dropoffAutocomplete.getPlace();
+          if (place.geometry && place.geometry.location) {
+            setDropoff(place.formatted_address || place.name || '');
+            addMarker(google, mapInstance, place.geometry.location, 'Dropoff Location', 'red');
+          }
+        });
       }
-    });
+    } catch (error) {
+      console.warn('Autocomplete setup failed:', error);
+      setRequestStatus('⚠️ Place search may not work properly. You can still enter addresses manually.');
+    }
+  };
+
+  // Add marker helper function
+  const addMarker = (google, mapInstance, position, title, color) => {
+    try {
+      let marker;
+      if (google.maps.marker && google.maps.marker.AdvancedMarkerElement) {
+        marker = new google.maps.marker.AdvancedMarkerElement({
+          map: mapInstance,
+          position: position,
+          title: title
+        });
+      } else {
+        marker = new google.maps.Marker({
+          map: mapInstance,
+          position: position,
+          title: title,
+          icon: {
+            url: `https://maps.google.com/mapfiles/ms/icons/${color}-dot.png`
+          }
+        });
+      }
+      
+      setMarkers(prev => [...prev.filter(m => m.title !== title), marker]);
+    } catch (error) {
+      console.warn('Failed to add marker:', error);
+    }
   };
 
   // Get current location
   const getCurrentLocation = useCallback(() => {
-    if (!navigator.geolocation || !map) return;
+    if (!navigator.geolocation || !map) {
+      setRequestStatus('❌ Geolocation not supported by your browser.');
+      return;
+    }
+
+    setRequestStatus('📍 Getting your location...');
 
     navigator.geolocation.getCurrentPosition(
       (position) => {
@@ -186,17 +280,17 @@ const ModernGoogleMap = () => {
         map.panTo(pos);
         map.setZoom(15);
         
-        const marker = new window.google.maps.marker.AdvancedMarkerElement({
-          map: map,
-          position: pos,
-          title: 'Current Location'
-        });
-        
-        setMarkers(prev => [...prev.filter(m => m.title !== 'Current Location'), marker]);
-        setRequestStatus('📍 Location updated!');
+        try {
+          const google = window.google;
+          addMarker(google, map, pos, 'Current Location', 'blue');
+          setRequestStatus('✅ Location updated!');
+        } catch (error) {
+          setRequestStatus('✅ Location updated (marker failed)');
+        }
       },
-      () => {
-        setRequestStatus('❌ Unable to get your location.');
+      (error) => {
+        console.warn('Geolocation error:', error);
+        setRequestStatus('❌ Unable to get your location. Please enable location services.');
       }
     );
   }, [map]);
@@ -240,9 +334,42 @@ ${result.data.message}
     initializeMap();
   }, [initializeMap]);
 
+  if (loadError) {
+    return (
+      <div style={{ 
+        height: '100vh', 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'center',
+        flexDirection: 'column',
+        backgroundColor: '#f8f9fa',
+        padding: '20px',
+        textAlign: 'center'
+      }}>
+        <div style={{ fontSize: '48px', marginBottom: '20px' }}>🗺️</div>
+        <h2 style={{ color: '#dc3545', marginBottom: '10px' }}>Map Loading Error</h2>
+        <p style={{ color: '#666', marginBottom: '20px' }}>{loadError}</p>
+        <button 
+          onClick={() => window.location.reload()} 
+          style={{
+            padding: '12px 24px',
+            backgroundColor: '#007bff',
+            color: 'white',
+            border: 'none',
+            borderRadius: '8px',
+            cursor: 'pointer',
+            fontSize: '16px'
+          }}
+        >
+          Refresh Page
+        </button>
+      </div>
+    );
+  }
+
   return (
     <div style={{ height: '100vh', display: 'flex', flexDirection: 'column' }}>
-      {/* Modern Form Header */}
+      {/* Header Form */}
       <div style={{
         padding: '20px',
         background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -347,12 +474,6 @@ ${result.data.message}
                   fontWeight: '600',
                   transition: 'all 0.2s ease'
                 }}
-                onMouseOver={(e) => {
-                  if (isLoaded) e.target.style.backgroundColor = 'rgba(255,255,255,0.3)';
-                }}
-                onMouseOut={(e) => {
-                  e.target.style.backgroundColor = 'rgba(255,255,255,0.2)';
-                }}
               >
                 📍 My Location
               </button>
@@ -400,24 +521,29 @@ ${result.data.message}
         </div>
       </div>
 
-      {/* Modern Map Container */}
+      {/* Map Container */}
       <div 
         ref={mapRef}
         style={{ 
           flex: 1,
           width: '100%',
           minHeight: '400px',
-          position: 'relative'
+          position: 'relative',
+          backgroundColor: '#f0f0f0'
         }}
       >
-        {!isLoaded && (
+        {!isLoaded && !loadError && (
           <div style={{
             position: 'absolute',
             top: '50%',
             left: '50%',
             transform: 'translate(-50%, -50%)',
             textAlign: 'center',
-            zIndex: 1000
+            zIndex: 1000,
+            backgroundColor: 'white',
+            padding: '20px',
+            borderRadius: '12px',
+            boxShadow: '0 4px 8px rgba(0,0,0,0.1)'
           }}>
             <div style={{
               width: '50px',
@@ -435,7 +561,8 @@ ${result.data.message}
         )}
       </div>
 
-      <style jsx>{`
+      {/* CSS Animation */}
+      <style>{`
         @keyframes spin {
           0% { transform: rotate(0deg); }
           100% { transform: rotate(360deg); }
@@ -445,4 +572,4 @@ ${result.data.message}
   );
 };
 
-export default ModernGoogleMap;
+export default UltraModernGoogleMap;
