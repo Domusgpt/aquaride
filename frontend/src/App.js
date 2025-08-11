@@ -1,7 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
-import GoogleMap from './GoogleMap';
-import TestGoogleMaps from './TestGoogleMaps';
+import ModernGoogleMap from './ModernGoogleMap';
 import Map from './Map';
 import Login from './Login';
 import Register from './Register';
@@ -18,10 +17,7 @@ function App() {
               <Link to="/">Home</Link>
             </li>
             <li>
-              <Link to="/map">Google Map</Link>
-            </li>
-            <li>
-              <Link to="/test">Test Maps</Link>
+              <Link to="/map">Book Ride</Link>
             </li>
             <li>
               <Link to="/login">Login</Link>
@@ -33,9 +29,8 @@ function App() {
         </nav>
 
         <Routes>
-          <Route path="/" element={<TestGoogleMaps />} />
-          <Route path="/map" element={<GoogleMap />} />
-          <Route path="/test" element={<TestGoogleMaps />} />
+          <Route path="/" element={<ModernGoogleMap />} />
+          <Route path="/map" element={<ModernGoogleMap />} />
           <Route path="/leaflet" element={<Map />} />
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
