@@ -1,17 +1,58 @@
 rules_version = '2';
-
 service cloud.firestore {
   match /databases/{database}/documents {
-    // Allow authenticated users to read and write their own user document
+    
+    // Users can read their own profile
     match /users/{userId} {
       allow read, write: if request.auth != null && request.auth.uid == userId;
     }
     
-    // Allow authenticated users to create ride requests
+    // Captains can read their own rides and update status
     match /rides/{rideId} {
-      allow read, write: if request.auth != null;
-      allow create: if request.auth != null && 
-        request.auth.uid == resource.data.passengerId;
+      allow read: if request.auth != null && 
+        (request.auth.uid == resource.data.captainId || 
+         request.auth.uid == resource.data.riderId ||
+         request.auth.token.role in ['admin', 'operations', 'support']);
+      allow write: if request.auth != null && 
+        (request.auth.uid == resource.data.captainId ||
+         request.auth.token.role in ['admin', 'operations']);
+    }
+    
+    // Captain data - captains can update their own, admins can read all
+    match /captains/{captainId} {
+      allow read: if request.auth != null && 
+        (request.auth.uid == captainId || 
+         request.auth.token.role in ['admin', 'operations']);
+      allow write: if request.auth != null && 
+        (request.auth.uid == captainId ||
+         request.auth.token.role in ['admin']);
+    }
+    
+    // Support tickets - agents and admins only
+    match /tickets/{ticketId} {
+      allow read, write: if request.auth != null && 
+        request.auth.token.role in ['support', 'admin', 'operations'];
+    }
+    
+    // Metrics - operations and admin only
+    match /metrics/{metricId} {
+      allow read: if request.auth != null && 
+        request.auth.token.role in ['admin', 'operations'];
+      allow write: if request.auth != null && 
+        request.auth.token.role == 'admin';
+    }
+    
+    // Emergency protocols - high privilege access
+    match /emergencies/{emergencyId} {
+      allow read, write: if request.auth != null && 
+        request.auth.token.role in ['admin', 'operations', 'support'];
+    }
+    
+    // Boat fleet data
+    match /boats/{boatId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        request.auth.token.role in ['admin', 'operations'];
     }
     
     // Allow system tests for development (remove in production)
@@ -19,7 +60,7 @@ service cloud.firestore {
       allow read, write: if request.auth != null;
     }
     
-    // Deny all other access
+    // Default deny all other access
     match /{document=**} {
       allow read, write: if false;
     }

@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AquaRide Operations Center</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #0f172a;
+            color: #e2e8f0;
+            overflow-x: hidden;
+        }
+        
+        .dashboard {
+            display: grid;
+            grid-template-areas: 
+                "header header header"
+                "sidebar main-content metrics"
+                "sidebar live-map alerts";
+            grid-template-columns: 280px 1fr 320px;
+            grid-template-rows: 80px 1fr 400px;
+            height: 100vh;
+            gap: 1rem;
+            padding: 1rem;
+        }
+        
+        .header {
+            grid-area: header;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            border: 1px solid #475569;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #38bdf8;
+        }
+        
+        .status-indicators {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .status-item {
+            text-align: center;
+        }
+        
+        .status-value {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #10b981;
+        }
+        
+        .status-label {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            text-transform: uppercase;
+        }
+        
+        .sidebar {
+            grid-area: sidebar;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #475569;
+        }
+        
+        .sidebar h3 {
+            color: #38bdf8;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .captain-list {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+        
+        .captain-item {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            padding: 1rem;
+            border-left: 4px solid #10b981;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .captain-item:hover {
+            background: rgba(56, 189, 248, 0.1);
+            transform: translateX(4px);
+        }
+        
+        .captain-item.busy {
+            border-left-color: #f59e0b;
+        }
+        
+        .captain-item.offline {
+            border-left-color: #ef4444;
+            opacity: 0.6;
+        }
+        
+        .captain-name {
+            font-weight: bold;
+            color: #e2e8f0;
+        }
+        
+        .captain-status {
+            font-size: 0.8rem;
+            color: #94a3b8;
+            display: flex;
+            justify-content: space-between;
+            margin-top: 0.3rem;
+        }
+        
+        .main-content {
+            grid-area: main-content;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #475569;
+            overflow-y: auto;
+        }
+        
+        .metrics-panel {
+            grid-area: metrics;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #475569;
+        }
+        
+        .live-map {
+            grid-area: live-map;
+            background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid #475569;
+            position: relative;
+        }
+        
+        .section-title {
+            color: #38bdf8;
+            margin-bottom: 1rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.1rem;
+        }
+        
+        .rides-table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        .rides-table th,
+        .rides-table td {
+            padding: 0.8rem;
+            text-align: left;
+            border-bottom: 1px solid #475569;
+        }
+        
+        .rides-table th {
+            background: rgba(15, 23, 42, 0.8);
+            color: #38bdf8;
+            font-weight: 600;
+        }
+        
+        .ride-status {
+            padding: 0.3rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .ride-status.active {
+            background: #10b981;
+            color: #000;
+        }
+        
+        .ride-status.pending {
+            background: #f59e0b;
+            color: #000;
+        }
+        
+        .ride-status.completed {
+            background: #6b7280;
+            color: #fff;
+        }
+        
+        .metric-card {
+            background: rgba(15, 23, 42, 0.6);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #38bdf8;
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #10b981;
+        }
+        
+        .metric-label {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-top: 0.3rem;
+        }
+        
+        .metric-change {
+            font-size: 0.8rem;
+            color: #10b981;
+        }
+        
+        .map-placeholder {
+            width: 100%;
+            height: 250px;
+            background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94a3b8;
+            border: 2px dashed #475569;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .boat-marker {
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background: #10b981;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #000;
+            font-weight: bold;
+            animation: pulse 2s infinite;
+        }
+        
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        
+        .alerts-section {
+            margin-top: 1rem;
+        }
+        
+        .alert-item {
+            background: rgba(239, 68, 68, 0.1);
+            border-left: 4px solid #ef4444;
+            border-radius: 4px;
+            padding: 0.8rem;
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+        
+        .alert-time {
+            color: #94a3b8;
+            font-size: 0.8rem;
+        }
+        
+        .action-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .btn {
+            padding: 0.6rem 1.2rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .btn-primary {
+            background: #38bdf8;
+            color: #000;
+        }
+        
+        .btn-danger {
+            background: #ef4444;
+            color: #fff;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .live-indicator {
+            display: inline-block;
+            width: 8px;
+            height: 8px;
+            background: #10b981;
+            border-radius: 50%;
+            animation: pulse 1.5s infinite;
+            margin-right: 0.5rem;
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard">
+        <!-- Header -->
+        <div class="header">
+            <div class="logo">
+                🌊 AquaRide Operations Center
+                <span class="live-indicator"></span>
+            </div>
+            <div class="status-indicators">
+                <div class="status-item">
+                    <div class="status-value" id="active-rides">47</div>
+                    <div class="status-label">Active Rides</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="online-captains">23</div>
+                    <div class="status-label">Captains Online</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="daily-revenue">$12,450</div>
+                    <div class="status-label">Today's Revenue</div>
+                </div>
+                <div class="status-item">
+                    <div class="status-value" id="customer-rating">4.8⭐</div>
+                    <div class="status-label">Avg Rating</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Sidebar - Captain Management -->
+        <div class="sidebar">
+            <h3>👨‍✈️ Active Captains</h3>
+            <div class="captain-list">
+                <div class="captain-item">
+                    <div class="captain-name">Captain Demo</div>
+                    <div class="captain-status">
+                        <span>🟢 Available</span>
+                        <span>3 rides today</span>
+                    </div>
+                </div>
+                <div class="captain-item busy">
+                    <div class="captain-name">Maria Rodriguez</div>
+                    <div class="captain-status">
+                        <span>🟡 On Trip</span>
+                        <span>5 rides today</span>
+                    </div>
+                </div>
+                <div class="captain-item">
+                    <div class="captain-name">John Mitchell</div>
+                    <div class="captain-status">
+                        <span>🟢 Available</span>
+                        <span>2 rides today</span>
+                    </div>
+                </div>
+                <div class="captain-item busy">
+                    <div class="captain-name">Sarah Chen</div>
+                    <div class="captain-status">
+                        <span>🟡 On Trip</span>
+                        <span>7 rides today</span>
+                    </div>
+                </div>
+                <div class="captain-item offline">
+                    <div class="captain-name">Mike Johnson</div>
+                    <div class="captain-status">
+                        <span>🔴 Offline</span>
+                        <span>4 rides today</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn btn-primary">📞 Broadcast</button>
+                <button class="btn btn-danger">🚨 Emergency</button>
+            </div>
+        </div>
+        
+        <!-- Main Content - Active Rides -->
+        <div class="main-content">
+            <h3 class="section-title">🚤 Live Ride Management</h3>
+            <table class="rides-table">
+                <thead>
+                    <tr>
+                        <th>Ride ID</th>
+                        <th>Captain</th>
+                        <th>Customer</th>
+                        <th>Route</th>
+                        <th>Status</th>
+                        <th>Duration</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>#R2025-001</td>
+                        <td>Captain Demo</td>
+                        <td>John Smith</td>
+                        <td>Miami Beach → Biscayne</td>
+                        <td><span class="ride-status active">Active</span></td>
+                        <td>23 min</td>
+                        <td>
+                            <button class="btn" style="background: #38bdf8; color: #000; padding: 0.3rem 0.6rem;">Track</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>#R2025-002</td>
+                        <td>Maria Rodriguez</td>
+                        <td>Emily Davis</td>
+                        <td>Key Biscayne → South Beach</td>
+                        <td><span class="ride-status active">Active</span></td>
+                        <td>15 min</td>
+                        <td>
+                            <button class="btn" style="background: #38bdf8; color: #000; padding: 0.3rem 0.6rem;">Track</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>#R2025-003</td>
+                        <td>Sarah Chen</td>
+                        <td>Mike Wilson</td>
+                        <td>Downtown → Stiltsville</td>
+                        <td><span class="ride-status pending">Pickup</span></td>
+                        <td>-</td>
+                        <td>
+                            <button class="btn" style="background: #f59e0b; color: #000; padding: 0.3rem 0.6rem;">Monitor</button>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>#R2025-004</td>
+                        <td>John Mitchell</td>
+                        <td>Lisa Brown</td>
+                        <td>Star Island → Fisher Island</td>
+                        <td><span class="ride-status completed">Completed</span></td>
+                        <td>45 min</td>
+                        <td>
+                            <button class="btn" style="background: #6b7280; color: #fff; padding: 0.3rem 0.6rem;">Review</button>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        
+        <!-- Metrics Panel -->
+        <div class="metrics-panel">
+            <h3 class="section-title">📊 Performance Metrics</h3>
+            
+            <div class="metric-card">
+                <div class="metric-value">156</div>
+                <div class="metric-label">Bookings Today</div>
+                <div class="metric-change">+12% vs yesterday</div>
+            </div>
+            
+            <div class="metric-card" style="border-left-color: #10b981;">
+                <div class="metric-value">98.2%</div>
+                <div class="metric-label">Completion Rate</div>
+                <div class="metric-change">+2.1% this week</div>
+            </div>
+            
+            <div class="metric-card" style="border-left-color: #f59e0b;">
+                <div class="metric-value">8.5 min</div>
+                <div class="metric-label">Avg Wait Time</div>
+                <div class="metric-change">-1.2 min vs last week</div>
+            </div>
+            
+            <div class="metric-card" style="border-left-color: #ef4444;">
+                <div class="metric-value">2</div>
+                <div class="metric-label">Active Incidents</div>
+                <div class="metric-change">-3 vs yesterday</div>
+            </div>
+        </div>
+        
+        <!-- Live Map -->
+        <div class="live-map">
+            <h3 class="section-title">🗺️ Live Fleet Tracking</h3>
+            <div class="map-placeholder">
+                <div style="text-align: center;">
+                    <div style="font-size: 1.2rem; margin-bottom: 0.5rem;">🌊 Miami Waters</div>
+                    <div style="font-size: 0.9rem;">Real-time boat tracking</div>
+                </div>
+                
+                <!-- Simulated boat markers -->
+                <div class="boat-marker" style="top: 30%; left: 20%;">🚤</div>
+                <div class="boat-marker" style="top: 60%; left: 40%; background: #f59e0b;">🚤</div>
+                <div class="boat-marker" style="top: 45%; left: 70%;">🚤</div>
+                <div class="boat-marker" style="top: 75%; left: 25%; background: #ef4444;">⚠️</div>
+            </div>
+            
+            <div class="alerts-section">
+                <h4 style="color: #ef4444; margin-bottom: 0.5rem;">🚨 Recent Alerts</h4>
+                <div class="alert-item">
+                    <div>Captain Mike Johnson - Mechanical Issue</div>
+                    <div class="alert-time">2 minutes ago</div>
+                </div>
+                <div class="alert-item" style="background: rgba(245, 158, 11, 0.1); border-left-color: #f59e0b;">
+                    <div>Weather Advisory - Strong winds expected</div>
+                    <div class="alert-time">15 minutes ago</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Simulate real-time updates
+        function updateMetrics() {
+            const activeRides = document.getElementById('active-rides');
+            const currentValue = parseInt(activeRides.textContent);
+            activeRides.textContent = currentValue + Math.floor(Math.random() * 3) - 1;
+            
+            // Update revenue
+            const revenue = document.getElementById('daily-revenue');
+            const currentRevenue = parseInt(revenue.textContent.replace('$', '').replace(',', ''));
+            revenue.textContent = `$${(currentRevenue + Math.floor(Math.random() * 100)).toLocaleString()}`;
+        }
+        
+        // Update metrics every 30 seconds
+        setInterval(updateMetrics, 30000);
+        
+        // Add click handlers for captain items
+        document.querySelectorAll('.captain-item').forEach(item => {
+            item.addEventListener('click', () => {
+                const captainName = item.querySelector('.captain-name').textContent;
+                alert(`Opening detailed view for ${captainName}`);
+            });
+        });
+        
+        // Add emergency button functionality
+        document.querySelector('.btn-danger').addEventListener('click', () => {
+            if (confirm('Are you sure you want to broadcast an emergency alert to all captains?')) {
+                alert('🚨 Emergency alert sent to all active captains!');
+            }
+        });
+        
+        console.log('🌊 AquaRide Operations Center loaded successfully!');
+        console.log('📊 Real-time monitoring active');
+        console.log('🚤 Fleet tracking enabled');
+    </script>
+</body>
+</html>

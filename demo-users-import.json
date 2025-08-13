@@ -1,0 +1,40 @@
+{
+  "users": [
+    {
+      "localId": "captain-demo",
+      "email": "captain@aquaride.com",
+      "emailVerified": true,
+      "displayName": "Captain Demo",
+      "passwordHash": "UkVGOkdCZE8reWw9", 
+      "salt": "bXlzYWx0",
+      "customAttributes": "{\"role\":\"captain\",\"verified\":true}"
+    },
+    {
+      "localId": "rider-demo", 
+      "email": "rider@aquaride.com",
+      "emailVerified": true,
+      "displayName": "Rider Demo",
+      "passwordHash": "UkVGOkdCZE8reWw9",
+      "salt": "bXlzYWx0", 
+      "customAttributes": "{\"role\":\"rider\",\"verified\":true}"
+    },
+    {
+      "localId": "owner-demo",
+      "email": "owner@aquaride.com", 
+      "emailVerified": true,
+      "displayName": "Boat Owner Demo",
+      "passwordHash": "UkVGOkdCZE8reWw9",
+      "salt": "bXlzYWx0",
+      "customAttributes": "{\"role\":\"owner\",\"verified\":true}"
+    },
+    {
+      "localId": "admin-demo",
+      "email": "admin@aquaride.com",
+      "emailVerified": true, 
+      "displayName": "Admin Demo",
+      "passwordHash": "UkVGOkdCZE8reWw5",
+      "salt": "bXlzYWx0",
+      "customAttributes": "{\"role\":\"admin\",\"isAdmin\":true}"
+    }
+  ]
+}

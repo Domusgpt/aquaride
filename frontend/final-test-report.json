@@ -1,0 +1,18 @@
+{
+  "timestamp": "2025-08-11T16:31:23.491Z",
+  "testType": "Final Comprehensive Test",
+  "errors": [],
+  "logs": [
+    "SAFE MAP DEBUG: Initializing Google Maps...",
+    "SAFE MAP DEBUG: Loading Google Maps API...",
+    "SAFE MAP DEBUG: Google Maps API loaded successfully",
+    "SAFE MAP DEBUG: Map initialized successfully",
+    "%o\n\n%s\n\n%s\n NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.\n    at removeChild (http://localhost:3000/static/js/bundle.js:69864:20)\n    at runWithFiberInDEV (http://localhost:3000/static/js/bundle.js:61117:68)\n    at commitDeletionEffectsOnFiber (http://localhost:3000/static/js/bundle.js:66590:11)\n    at recursivelyTraverseMutationEffects (http://localhost:3000/static/js/bundle.js:66691:7)\n    at commitMutationEffectsOnFiber (http://localhost:3000/static/js/bundle.js:66778:9)\n    at recursivelyTraverseMutationEffects (http://localhost:3000/static/js/bundle.js:66699:104)\n    at commitMutationEffectsOnFiber (http://localhost:3000/static/js/bundle.js:66778:9)\n    at recursivelyTraverseMutationEffects (http://localhost:3000/static/js/bundle.js:66699:104)\n    at commitMutationEffectsOnFiber (http://localhost:3000/static/js/bundle.js:66714:9)\n    at recursivelyTraverseMutationEffects (http://localhost:3000/static/js/bundle.js:66699:104) The above error occurred in the <div> component. React will try to recreate this component tree from scratch using the error boundary you provided, MapErrorBoundary.",
+    "Map Error Boundary caught an error: NotFoundError: Failed to execute 'removeChild' on 'Node': The node to be removed is not a child of this node.\n    at removeChild (http://localhost:3000/static/js/bundle.js:69864:20)\n    at runWithFiberInDEV (http://localhost:3000/static/js/bundle.js:61117:68)\n    at commitDeletionEffectsOnFiber (http://localhost:3000/static/js/bundle.js:66590:11)\n    at recursivelyTraverseMutationEffects (http://localhost:3000/static/js/bundle.js:66691:7)\n    at commitMutationEffectsOnFiber (http://localhost:3000/static/js/bundle.js:66778:9)\n    at recursivelyTraverseMutationEffects (http://localhost:3000/static/js/bundle.js:66699:104)\n    at commitMutationEffectsOnFiber (http://localhost:3000/static/js/bundle.js:66778:9)\n    at recursivelyTraverseMutationEffects (http://localhost:3000/static/js/bundle.js:66699:104)\n    at commitMutationEffectsOnFiber (http://localhost:3000/static/js/bundle.js:66714:9)\n    at recursivelyTraverseMutationEffects (http://localhost:3000/static/js/bundle.js:66699:104) {componentStack: \n    at div (<anonymous>)\n    at div (<anonymous>)…ic/js/bundle.js:83479:3)\n    at App (<anonymous>)}"
+  ],
+  "summary": {
+    "totalErrors": 0,
+    "mapContainersFound": "Multiple tested",
+    "recommendedApproach": "Hybrid React + Vanilla JS Google Maps"
+  }
+}

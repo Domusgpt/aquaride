@@ -10,7 +10,7 @@ import {
     signInWithPhoneNumber
 } from "firebase/auth";
 import { doc, setDoc } from "firebase/firestore";
-import { auth, db } from './firebase';
+import { auth, db } from './firebase-simple';
 
 const AuthProviders = ({ isRegistering = true, onSuccess }) => {
     const [email, setEmail] = useState('');
@@ -32,6 +32,7 @@ const AuthProviders = ({ isRegistering = true, onSuccess }) => {
                 photoURL: user.photoURL,
                 phoneNumber: user.phoneNumber,
                 isCaptain: isCaptain,
+                role: isCaptain ? 'captain' : 'rider', // ✅ Add proper role field
                 createdAt: new Date(),
                 lastLogin: new Date(),
                 authProvider: additionalData.provider || 'email',

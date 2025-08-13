@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { doc, getDoc, setDoc } from "firebase/firestore";
-import { db } from './firebase';
+import { db } from './firebase-simple';
 import AuthProviders from './AuthProviders';
 import './AuthProviders.css';
 
@@ -23,7 +23,8 @@ const Login = () => {
         }, { merge: true });
         
         // Redirect based on user type or to map
-        navigate(userData.isCaptain ? '/captain-dashboard' : '/map');
+        const targetRoute = userData.isCaptain ? '/captain' : '/book'; // ✅ Fix route names
+        navigate(targetRoute);
       } else {
         // First time login with social auth - go to map
         navigate('/map');

@@ -8,8 +8,8 @@ const Register = () => {
 
   const handleAuthSuccess = (user) => {
     console.log('Registration successful:', user);
-    // Redirect to map/dashboard after successful registration
-    navigate('/map');
+    // Redirect will be handled by App.js based on user role
+    navigate('/');
   };
 
   return (

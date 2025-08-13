@@ -29,7 +29,17 @@
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
    integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
    crossorigin=""/>
-    <title>React App</title>
+    <title>AquaRide - Water Transport</title>
+    <!-- Load Google Maps BEFORE React to avoid DOM conflicts -->
+    <script>
+      function initGoogleMapsGlobal() {
+        console.log('🌊 Google Maps loaded globally before React');
+        window.googleMapsReady = true;
+      }
+    </script>
+    <script async defer
+      src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_GZ0Z-R5zNUA5CTJw5-mq7f7GsgB_u4s&callback=initGoogleMapsGlobal&libraries=marker&loading=async">
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

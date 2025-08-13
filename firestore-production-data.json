@@ -1,0 +1,62 @@
+{
+  "rides": {
+    "ride-001": {
+      "id": "ride-001",
+      "status": "active",
+      "captainId": "captain-demo",
+      "riderId": "rider-demo",
+      "boatId": "boat-001",
+      "route": {
+        "pickup": { "lat": 25.7617, "lng": -80.1918, "address": "Miami Beach Marina" },
+        "destination": { "lat": 25.7907, "lng": -80.1300, "address": "Biscayne Bay" },
+        "currentPosition": { "lat": 25.7717, "lng": -80.1850 }
+      },
+      "pricing": {
+        "baseRate": 150,
+        "total": 150,
+        "paymentStatus": "pending"
+      },
+      "emergencyStatus": null
+    }
+  },
+  "captains": {
+    "captain-demo": {
+      "uid": "captain-demo",
+      "email": "captain@aquaride.com",
+      "displayName": "Captain Demo",
+      "status": "available",
+      "currentLocation": { "lat": 25.7617, "lng": -80.1918 },
+      "stats": {
+        "totalRides": 145,
+        "totalRevenue": 21750,
+        "averageRating": 4.9,
+        "completionRate": 98.5
+      },
+      "license": {
+        "number": "FL-123456",
+        "verified": true
+      }
+    }
+  },
+  "tickets": {
+    "ticket-001": {
+      "id": "ticket-001",
+      "type": "emergency",
+      "priority": "high",
+      "status": "open",
+      "title": "Engine failure during active ride",
+      "rideId": "ride-001",
+      "captainId": "captain-demo"
+    }
+  },
+  "metrics": {
+    "daily-2025-08-12": {
+      "date": "2025-08-12",
+      "totalRides": 156,
+      "activeRides": 47,
+      "totalRevenue": 12450,
+      "customerSatisfaction": 4.8,
+      "activeCaptains": 23
+    }
+  }
+}

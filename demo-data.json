@@ -1,0 +1,52 @@
+{
+  "boats": {
+    "boat-001": {
+      "name": "Sea Breeze",
+      "type": "Speedboat",
+      "capacity": 8,
+      "pricePerHour": 150,
+      "location": {
+        "lat": 25.7617,
+        "lng": -80.1918,
+        "address": "Miami Beach Marina"
+      },
+      "owner": "owner-demo",
+      "amenities": ["GPS", "Sound System", "Cooler", "Fishing Gear"],
+      "images": ["https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=500"],
+      "available": true,
+      "rating": 4.8
+    },
+    "boat-002": {
+      "name": "Ocean Explorer", 
+      "type": "Yacht",
+      "capacity": 12,
+      "pricePerHour": 300,
+      "location": {
+        "lat": 25.7907,
+        "lng": -80.1300,
+        "address": "Biscayne Bay Marina"
+      },
+      "owner": "owner-demo",
+      "amenities": ["WiFi", "Kitchen", "Bathroom", "Deck Space", "Air Conditioning"],
+      "images": ["https://images.unsplash.com/photo-1567899378494-47b22a2ae96a?w=500"],
+      "available": true,
+      "rating": 4.9
+    },
+    "boat-003": {
+      "name": "Fishing Master",
+      "type": "Fishing Boat",
+      "capacity": 6, 
+      "pricePerHour": 120,
+      "location": {
+        "lat": 25.7317,
+        "lng": -80.2520,
+        "address": "Key Biscayne Marina"
+      },
+      "owner": "owner-demo",
+      "amenities": ["Fishing Equipment", "Bait Station", "Fish Finder", "Live Well"],
+      "images": ["https://images.unsplash.com/photo-1574219970750-703bb28c3c52?w=500"],
+      "available": true,
+      "rating": 4.7
+    }
+  }
+}

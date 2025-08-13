@@ -1,0 +1,11 @@
+{
+  "timestamp": "2025-08-11T18:49:21.489Z",
+  "approach": "Direct Google Maps - No React Complications",
+  "mapLogs": [
+    "⏳ Waiting for global Google Maps...",
+    "Google Maps JavaScript API has been loaded directly without loading=async. This can result in suboptimal performance. For best-practice loading patterns please see https://goo.gle/js-api-loading",
+    "🌊 Google Maps loaded globally before React"
+  ],
+  "errorCount": 0,
+  "summary": "Testing simplest possible Google Maps integration"
+}
